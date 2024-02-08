@@ -348,7 +348,7 @@ type ComparisonGridHeaderProps = {
 	isInSignup: boolean;
 	isLaunchPage?: boolean | null;
 	isFooter?: boolean;
-	setVisibleGridPlans: ( visibleGridPlans: PlanSlug[] ) => void;
+	setVisibleGridPlans: ( visibleGridPlans: GridPlan[] ) => void;
 	currentSitePlanSlug?: string | null;
 	onUpgradeClick: ( planSlug: PlanSlug ) => void;
 	planActionOverrides?: PlanActionOverrides;
@@ -427,7 +427,7 @@ const ComparisonGridHeaderCell = ( {
 						onChange={ ( { target }: ChangeEvent< HTMLSelectElement > ) => {
 							const newPlan = target.value as PlanSlug;
 							const visiblePlans = visibleGridPlans.map( ( gridPlan ) =>
-								planSlug === gridPlan.planSlug ? newPlan : gridPlan.planSlug
+								planSlug === gridPlan.planSlug ? gridPlansIndex[ newPlan ] : gridPlan
 							);
 							setVisibleGridPlans( visiblePlans );
 						} }
@@ -1001,14 +1001,14 @@ const ComparisonGrid = ( {
 		? getWooExpressFeaturesGrouped()
 		: getPlanFeaturesGrouped();
 
-	const [ visibleGridPlans, setVisibleGridPlans ] = useVisibleGridPlans();
+	const { visibleGridPlans, setVisibleGridPlans } = useVisibleGridPlans();
 
 	const displayedGridPlans = useMemo( () => {
 		return sortPlans( gridPlans, currentSitePlanSlug, 'small' === gridSize );
 	}, [ gridPlans, currentSitePlanSlug, gridSize ] );
 
 	useEffect( () => {
-		let newVisiblePlans = visibleGridPlans.map( ( { planSlug } ) => planSlug );
+		let newVisiblePlans = visibleGridPlans;
 		let visibleLength = displayedGridPlans.length;
 
 		switch ( gridSize ) {
@@ -1025,9 +1025,7 @@ const ComparisonGrid = ( {
 		}
 
 		if ( newVisiblePlans.length !== visibleLength ) {
-			newVisiblePlans = displayedGridPlans
-				.slice( 0, visibleLength )
-				.map( ( { planSlug } ) => planSlug );
+			newVisiblePlans = displayedGridPlans.slice( 0, visibleLength );
 			setVisibleGridPlans( newVisiblePlans );
 		}
 	}, [ gridSize, displayedGridPlans, isInSignup, visibleGridPlans, setVisibleGridPlans ] );
@@ -1085,7 +1083,7 @@ const ComparisonGrid = ( {
 
 	return (
 		<div className={ classes }>
-			<Grid visiblePlans={ visiblePlans.length }>
+			<Grid visiblePlans={ visibleGridPlans.length }>
 				<StickyContainer
 					disabled={ isBottomHeaderInView }
 					stickyClass="is-sticky-header-row"
