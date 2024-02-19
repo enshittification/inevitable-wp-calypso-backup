@@ -310,20 +310,13 @@ const PlansFeaturesMain = ( {
 		};
 	}, [ signupFlowSubdomain, wpcomFreeDomainSuggestion ] );
 
-	const isDisplayingPlansNeededForFeature = () => {
-		if (
-			selectedFeature &&
-			isValidFeatureKey( selectedFeature ) &&
-			selectedPlan &&
-			getPlan( selectedPlan ) &&
-			! isPersonalPlan( selectedPlan ) &&
-			( 'interval' === planTypeSelector || ! previousRoute.startsWith( '/plans/' ) )
-		) {
-			return true;
-		}
-
-		return false;
-	};
+	const isDisplayingPlansNeededForFeature =
+		!! selectedFeature &&
+		isValidFeatureKey( selectedFeature ) &&
+		!! selectedPlan &&
+		!! getPlan( selectedPlan ) &&
+		! isPersonalPlan( selectedPlan ) &&
+		( 'interval' === planTypeSelector || ! previousRoute.startsWith( '/plans/' ) );
 
 	const handleUpgradeClick = useCallback(
 		( cartItems?: MinimalRequestCartProduct[] | null, clickedPlanSlug?: PlanSlug ) => {
@@ -445,7 +438,7 @@ const PlansFeaturesMain = ( {
 		coupon,
 		isSubdomainNotGenerated: ! resolvedSubdomainName.result,
 		siteId,
-		isDisplayingPlansNeededForFeature: isDisplayingPlansNeededForFeature(),
+		isDisplayingPlansNeededForFeature,
 	} );
 
 	// we neeed only the visible ones for features grid (these should extend into plans-ui data store selectors)
@@ -465,7 +458,7 @@ const PlansFeaturesMain = ( {
 		storageAddOns,
 		isSubdomainNotGenerated: ! resolvedSubdomainName.result,
 		coupon,
-		isDisplayingPlansNeededForFeature: isDisplayingPlansNeededForFeature(),
+		isDisplayingPlansNeededForFeature,
 	} );
 
 	let hidePlanSelector = false;
@@ -799,9 +792,7 @@ const PlansFeaturesMain = ( {
 						) }
 					</FreePlanSubHeader>
 				) }
-				{ isDisplayingPlansNeededForFeature() && (
-					<SecondaryFormattedHeader siteSlug={ siteSlug } />
-				) }
+				{ isDisplayingPlansNeededForFeature && <SecondaryFormattedHeader siteSlug={ siteSlug } /> }
 				{ ! isPlansGridReady && <Spinner size={ 30 } /> }
 				{ isPlansGridReady && (
 					<>

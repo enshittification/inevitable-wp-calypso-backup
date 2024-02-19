@@ -3,7 +3,6 @@ import { AddOnMeta } from '@automattic/data-stores';
 import { UseCheckPlanAvailabilityForPurchase } from '@automattic/data-stores/src/plans';
 import { useMemo } from '@wordpress/element';
 import { GridPlan, HiddenPlans, PlansIntent } from '../../types';
-import useFilterPlansForPlanFeatures from './use-filter-plans-for-plan-features';
 import useGridPlans, { UseFreeTrialPlanSlugs } from './use-grid-plans';
 import usePlanFeaturesForGridPlans from './use-plan-features-for-grid-plans';
 
@@ -57,24 +56,17 @@ const useGridPlansForFeaturesGrid = ( {
 		useCheckPlanAvailabilityForPurchase,
 		storageAddOns,
 		coupon,
-		hideEnterprisePlan: hiddenPlans.hideEnterprisePlan,
+		hiddenPlans,
 		eligibleForFreeHostingTrial,
 		showLegacyStorageFeature,
 		isSubdomainNotGenerated,
 		selectedSiteId: siteId,
-	} );
-
-	// TODO: `useFilterPlansForPlanFeatures` should gradually deprecate and whatever remains to fall into the `useGridPlans` hook
-	const filteredPlansForPlanFeatures = useFilterPlansForPlanFeatures( {
-		plans: gridPlans || [],
 		isDisplayingPlansNeededForFeature,
-		selectedPlan,
-		hiddenPlans,
 	} );
 
 	const planFeaturesForFeaturesGrid = usePlanFeaturesForGridPlans( {
+		gridPlans: gridPlans || [],
 		allFeaturesList,
-		gridPlans: filteredPlansForPlanFeatures,
 		intent,
 		isInSignup,
 		selectedFeature,

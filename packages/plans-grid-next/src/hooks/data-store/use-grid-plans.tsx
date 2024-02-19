@@ -22,12 +22,15 @@ import {
 	isBusinessPlan,
 	isEcommercePlan,
 	TYPE_P2_PLUS,
+	isPremiumPlan,
+	isFreePlan,
+	isPersonalPlan,
 } from '@automattic/calypso-products';
 import { Plans, type AddOnMeta } from '@automattic/data-stores';
 import { isSamePlan } from '../../lib/is-same-plan';
 import useHighlightLabels from './use-highlight-labels';
 import usePlansFromTypes from './use-plans-from-types';
-import type { GridPlan, PlansIntent } from '../../types';
+import type { GridPlan, HiddenPlans, PlansIntent } from '../../types';
 import type { TranslateResult } from 'i18n-calypso';
 
 export type UseFreeTrialPlanSlugs = ( {
@@ -52,10 +55,10 @@ interface Props {
 	intent?: PlansIntent;
 	selectedPlan?: PlanSlug;
 	sitePlanSlug?: PlanSlug | null;
-	hideEnterprisePlan?: boolean;
+	hiddenPlans: HiddenPlans;
 	isInSignup?: boolean;
 	showLegacyStorageFeature?: boolean;
-
+	isDisplayingPlansNeededForFeature: boolean;
 	/**
 	 * If the subdomain generation is unsuccessful we do not show the free plan
 	 */
@@ -64,15 +67,64 @@ interface Props {
 	selectedSiteId?: number | null;
 }
 
+const isGridPlanVisible = ( {
+	planSlug,
+	planSlugsForIntent,
+	selectedPlan,
+	hiddenPlans: {
+		hideFreePlan,
+		hidePersonalPlan,
+		hidePremiumPlan,
+		hideBusinessPlan,
+		hideEcommercePlan,
+	},
+	isDisplayingPlansNeededForFeature,
+}: {
+	planSlug: PlanSlug;
+	planSlugsForIntent: PlanSlug[];
+	selectedPlan?: PlanSlug;
+	hiddenPlans: HiddenPlans;
+	isDisplayingPlansNeededForFeature: boolean;
+} ): boolean => {
+	let isVisible = planSlugsForIntent.includes( planSlug );
+
+	if ( isDisplayingPlansNeededForFeature && selectedPlan ) {
+		if ( isEcommercePlan( selectedPlan ) ) {
+			isVisible = isEcommercePlan( planSlug );
+		}
+
+		if ( isBusinessPlan( selectedPlan ) ) {
+			isVisible = isBusinessPlan( planSlug ) || isEcommercePlan( planSlug );
+		}
+
+		if ( isPremiumPlan( selectedPlan ) ) {
+			isVisible =
+				isPremiumPlan( planSlug ) || isBusinessPlan( planSlug ) || isEcommercePlan( planSlug );
+		}
+	}
+
+	if (
+		( hideFreePlan && isFreePlan( planSlug ) ) ||
+		( hidePersonalPlan && isPersonalPlan( planSlug ) ) ||
+		( hidePremiumPlan && isPremiumPlan( planSlug ) ) ||
+		( hideBusinessPlan && isBusinessPlan( planSlug ) ) ||
+		( hideEcommercePlan && isEcommercePlan( planSlug ) )
+	) {
+		isVisible = false;
+	}
+
+	return isVisible;
+};
+
 const usePlanTypesWithIntent = ( {
 	intent,
 	selectedPlan,
 	sitePlanSlug,
-	hideEnterprisePlan,
+	hiddenPlans: { hideEnterprisePlan },
 	isSubdomainNotGenerated = false,
 }: Pick<
 	Props,
-	'intent' | 'selectedPlan' | 'sitePlanSlug' | 'hideEnterprisePlan' | 'isSubdomainNotGenerated'
+	'intent' | 'selectedPlan' | 'sitePlanSlug' | 'hiddenPlans' | 'isSubdomainNotGenerated'
 > ): string[] => {
 	const isEnterpriseAvailable = ! hideEnterprisePlan;
 	const isBloggerAvailable =
@@ -173,13 +225,14 @@ const useGridPlans = ( {
 	intent,
 	selectedPlan,
 	sitePlanSlug,
-	hideEnterprisePlan,
+	hiddenPlans,
 	isInSignup,
 	eligibleForFreeHostingTrial,
 	isSubdomainNotGenerated,
 	storageAddOns,
 	coupon,
 	selectedSiteId,
+	isDisplayingPlansNeededForFeature,
 }: Props ): Omit< GridPlan, 'features' >[] | null => {
 	const freeTrialPlanSlugs = useFreeTrialPlanSlugs( {
 		intent: intent ?? 'default',
@@ -190,7 +243,7 @@ const useGridPlans = ( {
 			intent: 'default',
 			selectedPlan,
 			sitePlanSlug,
-			hideEnterprisePlan,
+			hiddenPlans,
 			isSubdomainNotGenerated,
 		} ),
 		term,
@@ -201,7 +254,7 @@ const useGridPlans = ( {
 			intent,
 			selectedPlan,
 			sitePlanSlug,
-			hideEnterprisePlan,
+			hiddenPlans,
 			isSubdomainNotGenerated,
 		} ),
 		term,
@@ -274,10 +327,18 @@ const useGridPlans = ( {
 		const storageAddOnsForPlan =
 			isBusinessPlan( planSlug ) || isEcommercePlan( planSlug ) ? storageAddOns : null;
 
+		const isVisible = isGridPlanVisible( {
+			planSlug,
+			planSlugsForIntent,
+			selectedPlan,
+			hiddenPlans,
+			isDisplayingPlansNeededForFeature,
+		} );
+
 		return {
 			planSlug,
 			freeTrialPlanSlug: freeTrialPlanSlugs?.[ planConstantObj.type ],
-			isVisible: planSlugsForIntent.includes( planSlug ),
+			isVisible,
 			tagline,
 			availableForPurchase,
 			productNameShort,
