@@ -419,18 +419,22 @@ const PlansFeaturesMain = ( {
 
 	const eligibleForFreeHostingTrial = useSelector( isUserEligibleForFreeHostingTrial );
 
-	// we neeed only the visible ones for comparison grid (these should extend into plans-ui data store selectors)
-	const gridPlansForComparisonGrid = useGridPlansForComparisonGrid( {
-		allFeaturesList: FEATURES_LIST,
-		intent,
-		selectedFeature,
-		showLegacyStorageFeature,
+	const hiddenPlans = {
 		hideFreePlan,
 		hidePersonalPlan,
 		hidePremiumPlan,
 		hideBusinessPlan,
 		hideEcommercePlan,
 		hideEnterprisePlan,
+	};
+
+	// we neeed only the visible ones for comparison grid (these should extend into plans-ui data store selectors)
+	const gridPlansForComparisonGrid = useGridPlansForComparisonGrid( {
+		allFeaturesList: FEATURES_LIST,
+		intent,
+		selectedFeature,
+		showLegacyStorageFeature,
+		hiddenPlans,
 		eligibleForFreeHostingTrial,
 		useFreeTrialPlanSlugs,
 		term,
@@ -451,12 +455,7 @@ const PlansFeaturesMain = ( {
 		isInSignup,
 		selectedFeature,
 		showLegacyStorageFeature,
-		hideFreePlan,
-		hidePersonalPlan,
-		hidePremiumPlan,
-		hideBusinessPlan,
-		hideEcommercePlan,
-		hideEnterprisePlan,
+		hiddenPlans,
 		eligibleForFreeHostingTrial,
 		useFreeTrialPlanSlugs,
 		term,

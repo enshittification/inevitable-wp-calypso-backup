@@ -231,3 +231,12 @@ export type SupportedUrlFriendlyTermType = Extract<
 	UrlFriendlyTermType,
 	'yearly' | '2yearly' | '3yearly' | 'monthly'
 >;
+
+export type HiddenPlans = {
+	hideFreePlan?: boolean;
+	hidePersonalPlan?: boolean;
+	hidePremiumPlan?: boolean;
+	hideBusinessPlan?: boolean;
+	hideEcommercePlan?: boolean;
+	hideEnterprisePlan?: boolean;
+};

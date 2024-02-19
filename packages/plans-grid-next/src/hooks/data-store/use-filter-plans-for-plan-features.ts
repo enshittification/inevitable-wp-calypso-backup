@@ -6,29 +6,24 @@ import {
 	isPremiumPlan,
 } from '@automattic/calypso-products';
 import { useMemo } from '@wordpress/element';
-import type { GridPlan } from '../../types';
+import type { GridPlan, HiddenPlans } from '../../types';
 
 interface Props {
 	plans: Omit< GridPlan, 'features' >[];
 	isDisplayingPlansNeededForFeature: boolean;
 	selectedPlan?: string;
-	hideFreePlan?: boolean;
-	hidePersonalPlan?: boolean;
-	hidePremiumPlan?: boolean;
-	hideBusinessPlan?: boolean;
-	hideEcommercePlan?: boolean;
+	hiddenPlans: HiddenPlans;
 }
 
 const useFilterPlansForPlanFeatures = ( {
 	plans,
 	isDisplayingPlansNeededForFeature,
 	selectedPlan,
-	hideFreePlan,
-	hidePersonalPlan,
-	hidePremiumPlan,
-	hideBusinessPlan,
-	hideEcommercePlan,
+	hiddenPlans,
 }: Props ) => {
+	const { hideFreePlan, hidePersonalPlan, hidePremiumPlan, hideBusinessPlan, hideEcommercePlan } =
+		hiddenPlans;
+
 	const filteredPlans = useMemo( () => {
 		return isDisplayingPlansNeededForFeature
 			? plans.map( ( gridPlan ) => {

@@ -2,7 +2,7 @@ import { FeatureList, PlanSlug, TERMS_LIST } from '@automattic/calypso-products'
 import { AddOnMeta } from '@automattic/data-stores';
 import { UseCheckPlanAvailabilityForPurchase } from '@automattic/data-stores/src/plans';
 import { useMemo } from '@wordpress/element';
-import { GridPlan, PlansIntent } from '../../types';
+import { GridPlan, HiddenPlans, PlansIntent } from '../../types';
 import useFilterPlansForPlanFeatures from './use-filter-plans-for-plan-features';
 import useGridPlans, { UseFreeTrialPlanSlugs } from './use-grid-plans';
 import usePlanFeaturesForGridPlans from './use-plan-features-for-grid-plans';
@@ -13,12 +13,7 @@ interface Params {
 	isInSignup?: boolean;
 	selectedFeature?: string | null;
 	showLegacyStorageFeature?: boolean;
-	hideFreePlan?: boolean;
-	hidePersonalPlan?: boolean;
-	hidePremiumPlan?: boolean;
-	hideBusinessPlan?: boolean;
-	hideEcommercePlan?: boolean;
-	hideEnterprisePlan?: boolean;
+	hiddenPlans: HiddenPlans;
 	eligibleForFreeHostingTrial: boolean;
 	useFreeTrialPlanSlugs: UseFreeTrialPlanSlugs;
 	term?: ( typeof TERMS_LIST )[ number ];
@@ -38,12 +33,7 @@ const useGridPlansForFeaturesGrid = ( {
 	isInSignup,
 	selectedFeature,
 	showLegacyStorageFeature,
-	hideFreePlan,
-	hidePersonalPlan,
-	hidePremiumPlan,
-	hideBusinessPlan,
-	hideEcommercePlan,
-	hideEnterprisePlan,
+	hiddenPlans,
 	eligibleForFreeHostingTrial,
 	useFreeTrialPlanSlugs,
 	term,
@@ -67,7 +57,7 @@ const useGridPlansForFeaturesGrid = ( {
 		useCheckPlanAvailabilityForPurchase,
 		storageAddOns,
 		coupon,
-		hideEnterprisePlan,
+		hideEnterprisePlan: hiddenPlans.hideEnterprisePlan,
 		eligibleForFreeHostingTrial,
 		showLegacyStorageFeature,
 		isSubdomainNotGenerated,
@@ -79,11 +69,7 @@ const useGridPlansForFeaturesGrid = ( {
 		plans: gridPlans || [],
 		isDisplayingPlansNeededForFeature,
 		selectedPlan,
-		hideFreePlan,
-		hidePersonalPlan,
-		hidePremiumPlan,
-		hideBusinessPlan,
-		hideEcommercePlan,
+		hiddenPlans,
 	} );
 
 	const planFeaturesForFeaturesGrid = usePlanFeaturesForGridPlans( {

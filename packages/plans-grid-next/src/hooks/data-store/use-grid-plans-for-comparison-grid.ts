@@ -8,7 +8,7 @@ import {
 import { AddOnMeta } from '@automattic/data-stores';
 import { UseCheckPlanAvailabilityForPurchase } from '@automattic/data-stores/src/plans';
 import { useMemo } from '@wordpress/element';
-import { GridPlan, PlansIntent } from '../../types';
+import { GridPlan, HiddenPlans, PlansIntent } from '../../types';
 import useFilterPlansForPlanFeatures from './use-filter-plans-for-plan-features';
 import useGridPlans, { UseFreeTrialPlanSlugs } from './use-grid-plans';
 import useRestructuredPlanFeaturesForComparisonGrid from './use-restructured-plan-features-for-comparison-grid';
@@ -18,12 +18,7 @@ interface Params {
 	intent?: PlansIntent;
 	selectedFeature?: string | null;
 	showLegacyStorageFeature?: boolean;
-	hideFreePlan?: boolean;
-	hidePersonalPlan?: boolean;
-	hidePremiumPlan?: boolean;
-	hideBusinessPlan?: boolean;
-	hideEcommercePlan?: boolean;
-	hideEnterprisePlan?: boolean;
+	hiddenPlans: HiddenPlans;
 	eligibleForFreeHostingTrial: boolean;
 	useFreeTrialPlanSlugs: UseFreeTrialPlanSlugs;
 	term?: ( typeof TERMS_LIST )[ number ];
@@ -42,12 +37,7 @@ const useGridPlansForComparisonGrid = ( {
 	intent,
 	selectedFeature,
 	showLegacyStorageFeature,
-	hideFreePlan,
-	hidePersonalPlan,
-	hidePremiumPlan,
-	hideBusinessPlan,
-	hideEcommercePlan,
-	hideEnterprisePlan,
+	hiddenPlans,
 	eligibleForFreeHostingTrial,
 	useFreeTrialPlanSlugs,
 	term,
@@ -71,7 +61,7 @@ const useGridPlansForComparisonGrid = ( {
 		useCheckPlanAvailabilityForPurchase,
 		storageAddOns,
 		coupon,
-		hideEnterprisePlan,
+		hideEnterprisePlan: hiddenPlans.hideEnterprisePlan,
 		eligibleForFreeHostingTrial,
 		showLegacyStorageFeature,
 		isSubdomainNotGenerated,
@@ -83,11 +73,7 @@ const useGridPlansForComparisonGrid = ( {
 		plans: gridPlans || [],
 		isDisplayingPlansNeededForFeature,
 		selectedPlan,
-		hideFreePlan,
-		hidePersonalPlan,
-		hidePremiumPlan,
-		hideBusinessPlan,
-		hideEcommercePlan,
+		hiddenPlans,
 	} );
 
 	const planFeaturesForComparisonGrid = useRestructuredPlanFeaturesForComparisonGrid( {
