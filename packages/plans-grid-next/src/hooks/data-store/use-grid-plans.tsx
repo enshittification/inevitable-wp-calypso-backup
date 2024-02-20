@@ -68,9 +68,6 @@ interface Props {
 }
 
 const isGridPlanVisible = ( {
-	planSlug,
-	planSlugsForIntent,
-	selectedPlan,
 	hiddenPlans: {
 		hideFreePlan,
 		hidePersonalPlan,
@@ -79,12 +76,15 @@ const isGridPlanVisible = ( {
 		hideEcommercePlan,
 	},
 	isDisplayingPlansNeededForFeature,
+	planSlug,
+	planSlugsForIntent,
+	selectedPlan,
 }: {
+	hiddenPlans: HiddenPlans;
+	isDisplayingPlansNeededForFeature: boolean;
 	planSlug: PlanSlug;
 	planSlugsForIntent: PlanSlug[];
 	selectedPlan?: PlanSlug;
-	hiddenPlans: HiddenPlans;
-	isDisplayingPlansNeededForFeature: boolean;
 } ): boolean => {
 	let isVisible = planSlugsForIntent.includes( planSlug );
 

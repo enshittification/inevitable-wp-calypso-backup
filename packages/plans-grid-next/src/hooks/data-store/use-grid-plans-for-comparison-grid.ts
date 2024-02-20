@@ -13,60 +13,61 @@ import useGridPlans, { UseFreeTrialPlanSlugs } from './use-grid-plans';
 import useRestructuredPlanFeaturesForComparisonGrid from './use-restructured-plan-features-for-comparison-grid';
 
 const HIDDEN_PLANS = [ PLAN_HOSTING_TRIAL_MONTHLY, PLAN_ENTERPRISE_GRID_WPCOM ];
+
 interface Params {
 	allFeaturesList: FeatureList;
-	intent?: PlansIntent;
-	selectedFeature?: string | null;
-	showLegacyStorageFeature?: boolean;
-	hiddenPlans: HiddenPlans;
-	eligibleForFreeHostingTrial: boolean;
-	useFreeTrialPlanSlugs: UseFreeTrialPlanSlugs;
-	term?: ( typeof TERMS_LIST )[ number ];
-	selectedPlan?: PlanSlug;
-	sitePlanSlug?: PlanSlug | null;
-	useCheckPlanAvailabilityForPurchase: UseCheckPlanAvailabilityForPurchase;
-	storageAddOns: ( AddOnMeta | null )[];
 	coupon?: string;
-	isSubdomainNotGenerated: boolean;
-	siteId?: number | null;
+	eligibleForFreeHostingTrial: boolean;
+	hiddenPlans: HiddenPlans;
+	intent?: PlansIntent;
 	isDisplayingPlansNeededForFeature: boolean;
+	isSubdomainNotGenerated: boolean;
+	selectedFeature?: string | null;
+	selectedPlan?: PlanSlug;
+	showLegacyStorageFeature?: boolean;
+	siteId?: number | null;
+	sitePlanSlug: PlanSlug | null;
+	storageAddOns: ( AddOnMeta | null )[];
+	term?: ( typeof TERMS_LIST )[ number ];
+	useCheckPlanAvailabilityForPurchase: UseCheckPlanAvailabilityForPurchase;
+	useFreeTrialPlanSlugs: UseFreeTrialPlanSlugs;
 }
 
 const useGridPlansForComparisonGrid = ( {
 	allFeaturesList,
-	intent,
-	selectedFeature,
-	showLegacyStorageFeature,
-	hiddenPlans,
-	eligibleForFreeHostingTrial,
-	useFreeTrialPlanSlugs,
-	term,
-	selectedPlan,
-	sitePlanSlug,
-	useCheckPlanAvailabilityForPurchase,
-	storageAddOns,
 	coupon,
-	isSubdomainNotGenerated,
-	siteId,
+	eligibleForFreeHostingTrial,
+	hiddenPlans,
+	intent,
 	isDisplayingPlansNeededForFeature,
-}: Params ): GridPlan[] => {
+	isSubdomainNotGenerated,
+	selectedFeature,
+	selectedPlan,
+	showLegacyStorageFeature,
+	siteId,
+	sitePlanSlug,
+	storageAddOns,
+	term,
+	useCheckPlanAvailabilityForPurchase,
+	useFreeTrialPlanSlugs,
+}: Params ): GridPlan[] | null => {
 	const gridPlans = useGridPlans( {
 		allFeaturesList,
-		useFreeTrialPlanSlugs,
-		selectedFeature,
-		intent,
-		term,
-		selectedPlan,
-		sitePlanSlug,
-		useCheckPlanAvailabilityForPurchase,
-		storageAddOns,
 		coupon,
-		hiddenPlans,
 		eligibleForFreeHostingTrial,
-		showLegacyStorageFeature,
-		isSubdomainNotGenerated,
-		selectedSiteId: siteId,
+		hiddenPlans,
+		intent,
 		isDisplayingPlansNeededForFeature,
+		isSubdomainNotGenerated,
+		selectedFeature,
+		selectedPlan,
+		selectedSiteId: siteId,
+		showLegacyStorageFeature,
+		sitePlanSlug,
+		storageAddOns,
+		term,
+		useCheckPlanAvailabilityForPurchase,
+		useFreeTrialPlanSlugs,
 	} );
 
 	const planFeaturesForComparisonGrid = useRestructuredPlanFeaturesForComparisonGrid( {
@@ -79,7 +80,7 @@ const useGridPlansForComparisonGrid = ( {
 
 	return useMemo( () => {
 		if ( ! gridPlans ) {
-			return [];
+			return null;
 		}
 
 		return gridPlans.reduce( ( acc, gridPlan ) => {

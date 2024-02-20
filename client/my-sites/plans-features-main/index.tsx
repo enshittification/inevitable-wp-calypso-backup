@@ -424,41 +424,41 @@ const PlansFeaturesMain = ( {
 	// we neeed only the visible ones for comparison grid (these should extend into plans-ui data store selectors)
 	const gridPlansForComparisonGrid = useGridPlansForComparisonGrid( {
 		allFeaturesList: FEATURES_LIST,
-		intent,
-		selectedFeature,
-		showLegacyStorageFeature,
-		hiddenPlans,
-		eligibleForFreeHostingTrial,
-		useFreeTrialPlanSlugs,
-		term,
-		selectedPlan,
-		sitePlanSlug,
-		useCheckPlanAvailabilityForPurchase,
-		storageAddOns,
 		coupon,
-		isSubdomainNotGenerated: ! resolvedSubdomainName.result,
-		siteId,
+		eligibleForFreeHostingTrial,
+		hiddenPlans,
+		intent,
 		isDisplayingPlansNeededForFeature,
+		isSubdomainNotGenerated: ! resolvedSubdomainName.result,
+		selectedFeature,
+		selectedPlan,
+		showLegacyStorageFeature,
+		siteId,
+		sitePlanSlug,
+		storageAddOns,
+		term,
+		useCheckPlanAvailabilityForPurchase,
+		useFreeTrialPlanSlugs,
 	} );
 
 	// we neeed only the visible ones for features grid (these should extend into plans-ui data store selectors)
 	const gridPlansForFeaturesGrid = useGridPlansForFeaturesGrid( {
 		allFeaturesList: FEATURES_LIST,
-		intent,
-		isInSignup,
-		selectedFeature,
-		showLegacyStorageFeature,
-		hiddenPlans,
-		eligibleForFreeHostingTrial,
-		useFreeTrialPlanSlugs,
-		term,
-		selectedPlan,
-		sitePlanSlug,
-		useCheckPlanAvailabilityForPurchase,
-		storageAddOns,
-		isSubdomainNotGenerated: ! resolvedSubdomainName.result,
 		coupon,
+		eligibleForFreeHostingTrial,
+		hiddenPlans,
+		intent,
 		isDisplayingPlansNeededForFeature,
+		isInSignup,
+		isSubdomainNotGenerated: ! resolvedSubdomainName.result,
+		selectedFeature,
+		selectedPlan,
+		showLegacyStorageFeature,
+		sitePlanSlug,
+		storageAddOns,
+		term,
+		useCheckPlanAvailabilityForPurchase,
+		useFreeTrialPlanSlugs,
 	} );
 
 	let hidePlanSelector = false;
@@ -499,7 +499,7 @@ const PlansFeaturesMain = ( {
 			displayedIntervals: filteredDisplayedIntervals,
 			showPlanTypeSelectorDropdown,
 			kind: planTypeSelector,
-			plans: gridPlansForFeaturesGrid.map( ( gridPlan ) => gridPlan.planSlug ),
+			plans: gridPlansForFeaturesGrid?.map( ( gridPlan ) => gridPlan.planSlug ) || [],
 			currentSitePlanSlug: sitePlanSlug,
 			useCheckPlanAvailabilityForPurchase,
 			recordTracksEvent,
@@ -634,7 +634,7 @@ const PlansFeaturesMain = ( {
 	const gridPlanForSpotlight = useGridPlanForSpotlight( {
 		intent,
 		isSpotlightOnCurrentPlan,
-		gridPlansForFeaturesGrid,
+		gridPlans: gridPlansForFeaturesGrid || [],
 		sitePlanSlug,
 	} );
 
@@ -697,8 +697,6 @@ const PlansFeaturesMain = ( {
 		retargetViewPlans();
 	}, [] );
 
-	const isLoadingGridPlans = false; //Boolean( ! intent || ! gridPlans );
-
 	const handleStorageAddOnClick = useCallback(
 		( addOnSlug: WPComStorageAddOnSlug ) =>
 			recordTracksEvent( 'calypso_signup_storage_add_on_dropdown_option_click', {
@@ -714,6 +712,9 @@ const PlansFeaturesMain = ( {
 		}
 	);
 
+	const isLoadingGridPlans = Boolean(
+		! intent || ! gridPlansForFeaturesGrid || ! gridPlansForComparisonGrid
+	);
 	const isPlansGridReady = ! isLoadingGridPlans && ! resolvedSubdomainName.isLoading;
 
 	const enablePlanTypeSelectorStickyBehavior = isMobile() && showPlanTypeSelectorDropdown;
@@ -723,7 +724,7 @@ const PlansFeaturesMain = ( {
 		: masterbarHeight;
 	const planUpgradeCreditsApplicable = usePlanUpgradeCreditsApplicable(
 		siteId,
-		gridPlansForFeaturesGrid.map( ( gridPlan ) => gridPlan.planSlug )
+		gridPlansForFeaturesGrid?.map( ( gridPlan ) => gridPlan.planSlug )
 	);
 
 	return (
@@ -768,7 +769,9 @@ const PlansFeaturesMain = ( {
 				/>
 				{ siteId && (
 					<PlanNotice
-						visiblePlans={ gridPlansForFeaturesGrid.map( ( gridPlan ) => gridPlan.planSlug ) }
+						visiblePlans={
+							gridPlansForFeaturesGrid?.map( ( gridPlan ) => gridPlan.planSlug ) || []
+						}
 						siteId={ siteId }
 						isInSignup={ isInSignup }
 						{ ...( withDiscount &&
@@ -818,7 +821,7 @@ const PlansFeaturesMain = ( {
 						>
 							<div className="plans-wrapper">
 								<FeaturesGrid
-									gridPlans={ gridPlansForFeaturesGrid }
+									gridPlans={ gridPlansForFeaturesGrid || [] }
 									gridPlanForSpotlight={ gridPlanForSpotlight }
 									paidDomainName={ paidDomainName }
 									generatedWPComSubdomain={ resolvedSubdomainName }
@@ -884,7 +887,7 @@ const PlansFeaturesMain = ( {
 												/>
 											) }
 											<ComparisonGrid
-												gridPlans={ gridPlansForComparisonGrid }
+												gridPlans={ gridPlansForComparisonGrid || [] }
 												isInSignup={ isInSignup }
 												isInAdmin={ ! isInSignup }
 												isLaunchPage={ isLaunchPage }
