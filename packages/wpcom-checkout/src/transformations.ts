@@ -178,9 +178,9 @@ export interface LineItemCostOverrideForDisplay {
 	discountAmount?: number;
 }
 
-function isUserVisibleCostOverride(
-	costOverride: ResponseCartCostOverride,
-	product: ResponseCartProduct
+export function isUserVisibleCostOverride(
+	costOverride: { does_override_original_cost: boolean; override_code: string },
+	productSlug: string
 ): boolean {
 	if ( costOverride.does_override_original_cost ) {
 		// We won't display original cost overrides since they are
@@ -191,7 +191,7 @@ function isUserVisibleCostOverride(
 
 	if (
 		'introductory-offer' === costOverride.override_code &&
-		! canDisplayIntroductoryOfferDiscountForProduct( product )
+		! canDisplayIntroductoryOfferDiscountForProduct( productSlug )
 	) {
 		return false;
 	}
@@ -292,7 +292,7 @@ export function filterCostOverridesForLineItem(
 
 	return (
 		costOverrides
-			.filter( ( costOverride ) => isUserVisibleCostOverride( costOverride, product ) )
+			.filter( ( costOverride ) => isUserVisibleCostOverride( costOverride, product.product_slug ) )
 			// Hide coupon overrides because they will be displayed separately.
 			.filter( ( costOverride ) => costOverride.override_code !== 'coupon-discount' )
 			.map( ( costOverride ) => makeSaleCostOverrideUnique( costOverride, product, translate ) )
@@ -363,7 +363,7 @@ export function filterAndGroupCostOverridesForDisplay(
 		const costOverrides = product?.cost_overrides ?? [];
 
 		costOverrides
-			.filter( ( costOverride ) => isUserVisibleCostOverride( costOverride, product ) )
+			.filter( ( costOverride ) => isUserVisibleCostOverride( costOverride, product.product_slug ) )
 			.map( ( costOverride ) => makeSaleCostOverrideUnique( costOverride, product, translate ) )
 			.map( ( costOverride ) =>
 				makeIntroductoryOfferCostOverrideUnique( costOverride, product, translate, false )
@@ -418,10 +418,10 @@ function getYearlyVariantFromProduct( product: ResponseCartProduct ) {
  * Introductory offer discounts can sometimes be misleading. If we want to hide
  * them for a product in checkout, we can do so in this function.
  */
-function canDisplayIntroductoryOfferDiscountForProduct( product: ResponseCartProduct ): boolean {
+function canDisplayIntroductoryOfferDiscountForProduct( productSlug: string ): boolean {
 	// Social Advanced has free trial that we don't consider an introductory
 	// offer. See https://github.com/Automattic/wp-calypso/pull/86353
-	if ( isJetpackSocialAdvancedSlug( product.product_slug ) ) {
+	if ( isJetpackSocialAdvancedSlug( productSlug ) ) {
 		return false;
 	}
 	return true;
