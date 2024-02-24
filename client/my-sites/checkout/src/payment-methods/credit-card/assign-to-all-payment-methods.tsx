@@ -7,6 +7,30 @@ import { recordTracksEvent } from 'calypso/state/analytics/actions';
 
 const CheckboxWrapper = styled.div`
 	margin-top: 16px;
+
+	& .components-checkbox-control__input[type='checkbox']:focus {
+		border-color: ${ ( props ) => props.theme.colors.primary };
+
+		&:focus {
+			border-color: ${ ( props ) => props.theme.colors.primaryBorder };
+			box-shadow:
+				0 0 0 var( --wp-admin-border-width-focus ) #fff,
+				0 0 0 calc( 2 * var( --wp-admin-border-width-focus ) )
+					${ ( props ) => props.theme.colors.primaryBorder };
+		}
+	}
+	& .checkout__checkbox-control .components-checkbox-control__input[type='checkbox']:checked {
+		background: ${ ( props ) => props.theme.colors.primary };
+		border-color: ${ ( props ) => props.theme.colors.primary };
+
+		&:focus {
+			border-color: ${ ( props ) => props.theme.colors.primaryBorder };
+			box-shadow:
+				0 0 0 var( --wp-admin-border-width-focus ) #fff,
+				0 0 0 calc( 2 * var( --wp-admin-border-width-focus ) )
+					${ ( props ) => props.theme.colors.primaryBorder };
+		}
+	}
 `;
 
 export default function AssignToAllPaymentMethods( {
@@ -34,6 +58,7 @@ export default function AssignToAllPaymentMethods( {
 	return (
 		<CheckboxWrapper>
 			<CheckboxControl
+				className="checkout__checkbox-control"
 				disabled={ isDisabled }
 				checked={ isChecked }
 				onChange={ handleChangeEvent }

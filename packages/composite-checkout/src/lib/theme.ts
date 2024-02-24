@@ -61,7 +61,7 @@ const theme: Theme = {
 		background: swatches.gray0,
 		surface: swatches.white,
 		primary: colorStudio.colors[ 'Blue 50' ],
-		primaryBorder: swatches.pink80,
+		primaryBorder: colorStudio.colors[ 'Blue 30' ],
 		primaryOver: colorStudio.colors[ 'Blue 60' ],
 		highlight: swatches.blue50,
 		highlightBorder: swatches.blue80,
