@@ -812,7 +812,8 @@ const CheckoutSummaryBody = styled.div< { shouldUseCheckoutV2: boolean } >`
 		.is-visible & {
 			${ ( props ) =>
 				props.shouldUseCheckoutV2 &&
-				`grid-template-areas:
+				`grid-template-columns: 1fr 1fr;
+			grid-template-areas:
 			"preview preview"
 			"review review"
 			"summary summary"
@@ -829,7 +830,9 @@ const CheckoutSummaryBody = styled.div< { shouldUseCheckoutV2: boolean } >`
 		& {
 			${ ( props ) =>
 				props.shouldUseCheckoutV2
-					? `grid-template-areas:
+					? `
+				grid-template-columns: 1fr;
+				grid-template-areas:
 					"preview"
 					"review"
 					"summary"

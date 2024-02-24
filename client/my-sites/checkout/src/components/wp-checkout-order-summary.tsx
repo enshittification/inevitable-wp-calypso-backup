@@ -842,15 +842,15 @@ const CheckoutSummaryCard = styled.div< { shouldUseCheckoutV2?: boolean } >`
 
 const CheckoutSummaryFeatures = styled.div< { shouldUseCheckoutV2: boolean } >`
 	padding: 24px 0;
-	${ ( props ) => props.shouldUseCheckoutV2 && `grid-area: features; justify-self: flex-start;` }
+	${ ( props ) =>
+		props.shouldUseCheckoutV2 && `grid-area: features; justify-self: flex-start; padding: 36px 0;` }
 
 	@media ( ${ ( props ) => props.theme.breakpoints.tabletUp } ) {
 		${ ( props ) => ( props.shouldUseCheckoutV2 ? ` padding: 0 0 24px` : `padding: 24px 0;` ) }
 	}
 
 	@media ( ${ ( props ) => props.theme.breakpoints.desktopUp } ) {
-		padding: 24px 0;
-	}
+		${ hasCheckoutVersion( '2' ) ? `padding: 36px 0` : `padding: 24px 0;` }
 `;
 
 const CheckoutSummaryFeaturesUpsell = styled( CheckoutSummaryFeatures )`
