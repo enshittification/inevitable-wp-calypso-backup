@@ -1,6 +1,7 @@
 import { WordPressWordmark } from '@automattic/components';
 import { checkoutTheme, CheckoutModal } from '@automattic/composite-checkout';
 import { useShoppingCart } from '@automattic/shopping-cart';
+import { hasCheckoutVersion } from '@automattic/wpcom-checkout';
 import { ThemeProvider } from '@emotion/react';
 import classnames from 'classnames';
 import { useTranslate } from 'i18n-calypso';
@@ -91,7 +92,7 @@ const CheckoutMasterbar = ( {
 			} ) }
 		>
 			<div className="masterbar__secure-checkout">
-				{ showCloseButton && (
+				{ showCloseButton && ! hasCheckoutVersion( '2' ) && (
 					<Item
 						icon="chevron-left"
 						className="masterbar__close-button"
