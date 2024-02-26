@@ -168,7 +168,13 @@ function LineItemCostOverrideIntroOfferDueDate( { product }: { product: Response
 	if ( ! product.introductory_offer_terms?.enabled ) {
 		return null;
 	}
-	if ( ! doesIntroductoryOfferHaveDifferentTermLengthThanProduct( product ) ) {
+	if (
+		! doesIntroductoryOfferHaveDifferentTermLengthThanProduct(
+			product.cost_overrides,
+			product.introductory_offer_terms,
+			product.months_per_bill_period
+		)
+	) {
 		return null;
 	}
 	const tosData = responseCart.terms_of_service?.find( ( tos ) => {
