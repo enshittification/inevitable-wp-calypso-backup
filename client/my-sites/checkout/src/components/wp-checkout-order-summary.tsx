@@ -850,7 +850,7 @@ const CheckoutSummaryFeatures = styled.div< { shouldUseCheckoutV2: boolean } >`
 	}
 
 	@media ( ${ ( props ) => props.theme.breakpoints.desktopUp } ) {
-		${ hasCheckoutVersion( '2' ) ? `padding: 36px 0` : `padding: 24px 0;` }
+		${ ( props ) => ( props.shouldUseCheckoutV2 ? `padding: 36px 0` : `padding: 24px 0;` ) }
 `;
 
 const CheckoutSummaryFeaturesUpsell = styled( CheckoutSummaryFeatures )`

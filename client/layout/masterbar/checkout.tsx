@@ -1,7 +1,6 @@
 import { WordPressWordmark } from '@automattic/components';
 import { checkoutTheme, CheckoutModal } from '@automattic/composite-checkout';
 import { useShoppingCart } from '@automattic/shopping-cart';
-import { hasCheckoutVersion } from '@automattic/wpcom-checkout';
 import { ThemeProvider } from '@emotion/react';
 import classnames from 'classnames';
 import { useTranslate } from 'i18n-calypso';
@@ -10,6 +9,7 @@ import AkismetLogo from 'calypso/components/akismet-logo';
 import JetpackLogo from 'calypso/components/jetpack-logo';
 import CalypsoShoppingCartProvider from 'calypso/my-sites/checkout/calypso-shopping-cart-provider';
 import { DefaultMasterbarContact } from 'calypso/my-sites/checkout/checkout-thank-you/redesign-v2/masterbar-styled/default-contact';
+import { useCheckoutV2 } from 'calypso/my-sites/checkout/src/hooks/use-checkout-v2';
 import useValidCheckoutBackUrl from 'calypso/my-sites/checkout/src/hooks/use-valid-checkout-back-url';
 import { leaveCheckout } from 'calypso/my-sites/checkout/src/lib/leave-checkout';
 import useCartKey from 'calypso/my-sites/checkout/use-cart-key';
@@ -37,6 +37,7 @@ const CheckoutMasterbar = ( {
 }: Props ) => {
 	const translate = useTranslate();
 	const forceCheckoutBackUrl = useValidCheckoutBackUrl( siteSlug );
+	const shouldUseCheckoutV2 = useCheckoutV2() === 'treatment';
 
 	const getCheckoutType = () => {
 		if ( window.location.pathname.startsWith( '/checkout/jetpack' ) || isJetpackNotAtomic ) {
@@ -92,7 +93,7 @@ const CheckoutMasterbar = ( {
 			} ) }
 		>
 			<div className="masterbar__secure-checkout">
-				{ showCloseButton && ! hasCheckoutVersion( '2' ) && (
+				{ showCloseButton && ! shouldUseCheckoutV2 && (
 					<Item
 						icon="chevron-left"
 						className="masterbar__close-button"
