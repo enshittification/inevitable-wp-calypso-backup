@@ -331,7 +331,7 @@ function filterCostOverridesForReceiptItem(
 ): LineItemCostOverrideForDisplay[] {
 	return item.cost_overrides
 		.filter( ( costOverride ) => isUserVisibleCostOverride( costOverride, item.product_slug ) )
-		.filter( ( costOverride ) =>
+		.map( ( costOverride ) =>
 			makeIntroductoryOfferCostOverrideUnique( costOverride, item, translate )
 		)
 		.map( ( costOverride ) => {
