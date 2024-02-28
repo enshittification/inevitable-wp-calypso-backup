@@ -2,6 +2,7 @@ import { isEnabled } from '@automattic/calypso-config';
 import { Button } from '@automattic/components';
 import { isWithinBreakpoint } from '@automattic/viewport';
 import { getQueryArg, removeQueryArgs, addQueryArgs } from '@wordpress/url';
+import classNames from 'classnames';
 import { useTranslate } from 'i18n-calypso';
 import { useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import DocumentHead from 'calypso/components/data/document-head';
@@ -9,9 +10,14 @@ import Notice from 'calypso/components/notice';
 import SidebarNavigation from 'calypso/components/sidebar-navigation';
 import useFetchDashboardSites from 'calypso/data/agency-dashboard/use-fetch-dashboard-sites';
 import useFetchMonitorVerfiedContacts from 'calypso/data/agency-dashboard/use-fetch-monitor-verified-contacts';
+import { AgencyDashboardFilterMap } from 'calypso/jetpack-cloud/sections/agency-dashboard/sites-overview/types';
+import { sitesPath } from 'calypso/lib/jetpack/paths';
 import { useDispatch, useSelector } from 'calypso/state';
 import { recordTracksEvent } from 'calypso/state/analytics/actions';
-import { resetSite } from 'calypso/state/jetpack-agency-dashboard/actions';
+import {
+	resetSite,
+	updateDashboardURLQueryArgs,
+} from 'calypso/state/jetpack-agency-dashboard/actions';
 import {
 	checkIfJetpackSiteGotDisconnected,
 	getSelectedLicenses,
@@ -29,12 +35,14 @@ import useQueryProvisioningBlogIds from './hooks/use-query-provisioning-blog-ids
 import { DASHBOARD_PRODUCT_SLUGS_BY_TYPE } from './lib/constants';
 import SiteAddLicenseNotification from './site-add-license-notification';
 import SiteContentHeader from './site-content-header';
+import { JetpackPreviewPane } from './site-feature-previews/jetpack-preview-pane';
 import SiteNotifications from './site-notifications';
 import SiteTopHeaderButtons from './site-top-header-buttons';
 import SitesDataViews from './sites-dataviews';
 import { SitesViewState } from './sites-dataviews/interfaces';
 
 import './style.scss';
+import './style-dashboard-v2.scss';
 
 const QUERY_PARAM_PROVISIONING = 'provisioning';
 
@@ -54,27 +62,35 @@ export default function SitesDashboardV2() {
 		? selectedSiteLicenses.reduce( ( acc, { products } ) => acc + products.length, 0 )
 		: selectedLicenses?.length;
 
-	const {
-		search,
-		currentPage,
-		filter,
-		sort,
-		// TODO - These props will be used when we implement the bulk management:
-		// selectedSites,
-		// setSelectedSites,
-		// setIsBulkManagementActive,
-	} = useContext( SitesOverviewContext );
+	const filtersMap: AgencyDashboardFilterMap[] = [
+		{ filterType: 'all_issues', ref: 1 },
+		{ filterType: 'backup_failed', ref: 2 },
+		{ filterType: 'backup_warning', ref: 3 },
+		{ filterType: 'threats_found', ref: 4 },
+		{ filterType: 'site_disconnected', ref: 5 },
+		{ filterType: 'site_down', ref: 6 },
+		{ filterType: 'plugin_updates', ref: 7 },
+	];
+
+	const { path, search, currentPage, filter, sort } = useContext( SitesOverviewContext );
 
 	const [ sitesViewState, setSitesViewState ] = useState< SitesViewState >( {
 		type: 'table',
 		perPage: 50,
 		page: currentPage,
 		sort: {
-			field: 'site',
+			field: 'url',
 			direction: 'desc',
 		},
 		search: search,
-		filters: [],
+		filters:
+			filter?.issueTypes?.map( ( issueType ) => {
+				return {
+					field: 'status',
+					operator: 'in',
+					value: filtersMap.find( ( filterMap ) => filterMap.filterType === issueType )?.ref || 1,
+				};
+			} ) || [],
 		hiddenFields: [ 'status' ],
 		layout: {},
 		selectedSite: undefined,
@@ -94,6 +110,45 @@ export default function SitesDashboardV2() {
 		},
 		[ setSitesViewState ]
 	);
+
+	// Filter selection
+	useEffect( () => {
+		if ( isLoading || isError || window.location.pathname !== sitesPath() ) {
+			return;
+		}
+		const filtersSelected =
+			sitesViewState.filters?.map( ( filter ) => {
+				const filterType =
+					filtersMap.find( ( filterMap ) => filterMap.ref === filter.value )?.filterType ||
+					'all_issues';
+
+				return filterType;
+			} ) || [];
+
+		updateDashboardURLQueryArgs( { filter: filtersSelected || [] } );
+	}, [ isLoading, isError, sitesViewState.filters ] );
+
+	// Search query
+	useEffect( () => {
+		if ( isLoading || isError || window.location.pathname !== sitesPath() ) {
+			return;
+		}
+		updateDashboardURLQueryArgs( { search: sitesViewState.search } );
+	}, [ isLoading, isError, sitesViewState.search ] );
+
+	// Set or clear filter depending on sites submenu path selected
+	useEffect( () => {
+		if ( path === '/sites' || path === '/sites/favorites' ) {
+			setSitesViewState( { ...sitesViewState, filters: [], search: '' } );
+		}
+		if ( path === '/sites?issue_types=all_issues' ) {
+			setSitesViewState( {
+				...sitesViewState,
+				filters: [ { field: 'status', operator: 'in', value: 1 } ],
+				search: '',
+			} );
+		}
+	}, [ path ] );
 
 	useEffect( () => {
 		if ( jetpackSiteDisconnected ) {
@@ -228,75 +283,96 @@ export default function SitesDashboardV2() {
 		);
 	};
 
+	const closeSitePreviewPane = useCallback( () => {
+		if ( sitesViewState.selectedSite ) {
+			setSitesViewState( { ...sitesViewState, type: 'table', selectedSite: undefined } );
+		}
+	}, [ sitesViewState, setSitesViewState ] );
+
 	return (
-		<div className="sites-overview">
-			<DocumentHead title={ pageTitle } />
-			<SidebarNavigation sectionTitle={ pageTitle } />
-			<SiteNotifications />
-			<div className="sites-overview__container">
-				<div className="sites-overview__tabs">
-					<div className="sites-overview__content-wrapper">
-						<DashboardBanners />
+		<div
+			className={ classNames(
+				'sites-dashboard__layout',
+				! sitesViewState.selectedSite && 'preview-hidden'
+			) }
+		>
+			<div className="sites-overview">
+				<DocumentHead title={ pageTitle } />
+				<SidebarNavigation sectionTitle={ pageTitle } />
+				<SiteNotifications />
+				<div className="sites-overview__container">
+					<div className="sites-overview__tabs">
+						<div className="sites-overview__content-wrapper">
+							<DashboardBanners />
 
-						{ isProvisioningSite && ! hasDismissedProvisioningNotice && (
-							<Notice status="is-info" onDismissClick={ onDismissProvisioningNotice }>
-								{ translate(
-									"We're setting up your new WordPress.com site and will notify you once it's ready, which should only take a few minutes."
-								) }
-							</Notice>
-						) }
-						{ data?.sites && <SiteAddLicenseNotification /> }
-						<SiteContentHeader
-							content={
-								// render content only on large screens, The buttons for small screen have their own section
-								isLargeScreen &&
-								( selectedLicensesCount > 0 ? (
-									renderIssueLicenseButton()
-								) : (
-									<SiteTopHeaderButtons />
-								) )
+							{ isProvisioningSite && ! hasDismissedProvisioningNotice && (
+								<Notice status="is-info" onDismissClick={ onDismissProvisioningNotice }>
+									{ translate(
+										"We're setting up your new WordPress.com site and will notify you once it's ready, which should only take a few minutes."
+									) }
+								</Notice>
+							) }
+							{ data?.sites && <SiteAddLicenseNotification /> }
+							<SiteContentHeader
+								content={
+									// render content only on large screens, The buttons for small screen have their own section
+									isLargeScreen &&
+									( selectedLicensesCount > 0 ? (
+										renderIssueLicenseButton()
+									) : (
+										<SiteTopHeaderButtons />
+									) )
+								}
+								pageTitle={ pageTitle }
+								// Only renderIssueLicenseButton should be sticky.
+								showStickyContent={ !! ( selectedLicensesCount > 0 && isLargeScreen ) }
+							/>
+							{
+								// Render the add site and issue license buttons on mobile as a different component.
+								! isLargeScreen && <SiteTopHeaderButtons />
 							}
-							pageTitle={ pageTitle }
-							// Only renderIssueLicenseButton should be sticky.
-							showStickyContent={ !! ( selectedLicensesCount > 0 && isLargeScreen ) }
-						/>
-
-						{
-							// Render the add site and issue license buttons on mobile as a different component.
-							! isLargeScreen && <SiteTopHeaderButtons />
-						}
+						</div>
+					</div>
+					<div className="sites-overview__content">
+						<DashboardDataContext.Provider
+							value={ {
+								verifiedContacts: {
+									emails: verifiedContacts?.emails ?? [],
+									phoneNumbers: verifiedContacts?.phoneNumbers ?? [],
+									refetchIfFailed: () => {
+										if ( fetchContactFailed ) {
+											refetchContacts();
+										}
+										return;
+									},
+								},
+								products: products ?? [],
+								isLargeScreen: isLargeScreen || false,
+							} }
+						>
+							<SitesDataViews
+								data={ data }
+								isLoading={ isLoading }
+								isLargeScreen={ isLargeScreen || false }
+								onSitesViewChange={ onSitesViewChange }
+								sitesViewState={ sitesViewState }
+							/>
+						</DashboardDataContext.Provider>
 					</div>
 				</div>
-				<div className="sites-overview__content">
-					<DashboardDataContext.Provider
-						value={ {
-							verifiedContacts: {
-								emails: verifiedContacts?.emails ?? [],
-								phoneNumbers: verifiedContacts?.phoneNumbers ?? [],
-								refetchIfFailed: () => {
-									if ( fetchContactFailed ) {
-										refetchContacts();
-									}
-									return;
-								},
-							},
-							products: products ?? [],
-							isLargeScreen: isLargeScreen || false,
-						} }
-					>
-						<SitesDataViews
-							data={ data }
-							isLoading={ isLoading }
-							onSitesViewChange={ onSitesViewChange }
-							sitesViewState={ sitesViewState }
-						/>
-					</DashboardDataContext.Provider>
-				</div>
+				{ ! isLargeScreen && selectedLicensesCount > 0 && (
+					<div className="sites-overview__issue-licenses-button-small-screen">
+						{ renderIssueLicenseButton() }
+					</div>
+				) }
 			</div>
-			{ ! isLargeScreen && selectedLicensesCount > 0 && (
-				<div className="sites-overview__issue-licenses-button-small-screen">
-					{ renderIssueLicenseButton() }
-				</div>
+			{ sitesViewState.selectedSite && (
+				<JetpackPreviewPane
+					site={ sitesViewState.selectedSite }
+					closeSitePreviewPane={ closeSitePreviewPane }
+					isSmallScreen={ ! isLargeScreen }
+					hasError={ isError }
+				/>
 			) }
 		</div>
 	);

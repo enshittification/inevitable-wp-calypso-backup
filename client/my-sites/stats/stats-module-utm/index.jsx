@@ -1,24 +1,42 @@
+import useUTMMetricTopPostsQuery from '../hooks/use-utm-metric-top-posts-query';
+import useUTMMetricsQuery from '../hooks/use-utm-metrics-query';
 import StatsModuleDataQuery from '../stats-module/stats-module-data-query';
 import statsStrings from '../stats-strings';
-import { useMockData } from './useMockData';
 
-const StatsModuleUTM = ( { period, query } ) => {
+const StatsModuleUTM = ( { siteId, period, postId, query, summary } ) => {
 	const moduleStrings = statsStrings();
 
-	// TODO: Use TanStack for API requests.
-	const { isRequestingData, data } = useMockData();
+	// Fetch UTM metrics with switched UTM parameters.
+	const { isFetching: isFetchingMetricsAndTopPosts, metrics } = useUTMMetricsQuery(
+		siteId,
+		'utm_source,utm_medium'
+	);
+	// Fetch top posts for all UTM metric items.
+	const { topPosts } = useUTMMetricTopPostsQuery( siteId, 'utm_source,utm_medium', metrics );
+
+	// Combine metrics with top posts.
+	const data = metrics.map( ( metric ) => {
+		const paramValues = metric.paramValues;
+		const children = topPosts[ paramValues ] || [];
+
+		return {
+			...metric,
+			children,
+		};
+	} );
+
+	const hideSummaryLink = postId !== undefined || summary === true;
 
 	return (
 		<StatsModuleDataQuery
 			data={ data }
 			path="utm"
-			statType="statsUTM"
 			className="stats-module-utm"
 			moduleStrings={ moduleStrings.utm }
 			period={ period }
 			query={ query }
-			summary={ false }
-			isLoading={ isRequestingData }
+			isLoading={ isFetchingMetricsAndTopPosts ?? true }
+			hideSummaryLink={ hideSummaryLink }
 		/>
 	);
 };

@@ -18,6 +18,10 @@
 
 		&:hover {
 			background: var(--studio-gray-0);
+
+			.site-set-favorite__favorite-icon {
+				visibility: visible;
+			}
 		}
 
 		th {
@@ -32,6 +36,15 @@
 			border-bottom: 1px solid var(--studio-gray-5);
 			vertical-align: middle;
 		}
+
+		.site-sort__clickable {
+			cursor: pointer;
+			padding-left: 1rem;
+
+		}
+	}
+	ul.dataviews-view-list li:hover {
+		background-color: var(--studio-gray-0);
 	}
 }
 
@@ -47,6 +60,10 @@
 .sites-dataviews__site {
 	display: flex;
 	flex-direction: row;
+
+	.button {
+		padding: 0;
+	}
 }
 
 .sites-dataviews__site-name {
@@ -55,18 +72,34 @@
 	align-items: flex-start;
 	justify-content: flex-start;
 	white-space: nowrap;
-	font-weight: 600;
+	font-weight: 500;
+	font-size: rem(14px);
 }
 
 .sites-dataviews__site-url {
-	font-size: 0.75rem;
+	font-size: rem(12px);
 	color: var(--studio-gray-60);
 	font-weight: 400;
 }
 
-.sites-dataviews__site-favicon {
-	width: 50px;
-	height: 50px;
-	background: linear-gradient(45deg, #ff0056, #ff8a78, #57b7ff, #9c00d4);
-	margin-right: 16px;
+.sites-dataviews__actions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: nowrap;
+
+	@media (min-width: 1080px) {
+		.site-actions__actions-large-screen {
+			float: none;
+			margin-inline-end: 20px;
+		}
+	}
+
+	.site-preview__open {
+		.gridicon.gridicons-chevron-right {
+			width: 18px;
+			height: 18px;
+		}
+	}
 }

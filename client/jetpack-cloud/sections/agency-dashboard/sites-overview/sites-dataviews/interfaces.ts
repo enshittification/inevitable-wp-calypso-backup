@@ -7,6 +7,7 @@ export interface SitesDataViewsProps {
 	isLoading: boolean;
 	onSitesViewChange: ( view: SitesViewState ) => void;
 	sitesViewState: SitesViewState;
+	isLargeScreen: boolean;
 }
 
 export interface Sort {
@@ -17,7 +18,7 @@ export interface Sort {
 export interface Filter {
 	field: string;
 	operator: string;
-	value: string;
+	value: number;
 }
 
 export interface SitesViewState {
