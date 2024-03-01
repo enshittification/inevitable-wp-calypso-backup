@@ -5,7 +5,7 @@ import { GridPlan, PlansIntent } from '../../types';
 const SPOTLIGHT_ENABLED_INTENTS = [ 'plans-default-wpcom' ];
 
 interface Params {
-	gridPlans: GridPlan[];
+	gridPlans: GridPlan[] | null;
 	intent?: PlansIntent;
 	isSpotlightOnCurrentPlan?: boolean;
 	sitePlanSlug?: string | null;
@@ -20,7 +20,7 @@ const useGridPlanForSpotlight = ( {
 	return useMemo( () => {
 		const isIntentSpotlightEnabled = intent ? SPOTLIGHT_ENABLED_INTENTS.includes( intent ) : false;
 
-		return sitePlanSlug && isSpotlightOnCurrentPlan && isIntentSpotlightEnabled
+		return gridPlans && sitePlanSlug && isSpotlightOnCurrentPlan && isIntentSpotlightEnabled
 			? gridPlans.find(
 					( { planSlug } ) => getPlanClass( planSlug ) === getPlanClass( sitePlanSlug )
 			  )

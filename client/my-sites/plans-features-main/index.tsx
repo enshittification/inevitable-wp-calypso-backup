@@ -632,7 +632,7 @@ const PlansFeaturesMain = ( {
 	const gridPlanForSpotlight = useGridPlanForSpotlight( {
 		intent,
 		isSpotlightOnCurrentPlan,
-		gridPlans: gridPlansForFeaturesGrid || [],
+		gridPlans: gridPlansForFeaturesGrid,
 		sitePlanSlug,
 	} );
 
