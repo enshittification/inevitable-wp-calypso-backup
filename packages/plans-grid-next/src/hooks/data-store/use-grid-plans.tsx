@@ -27,6 +27,7 @@ import {
 	isPersonalPlan,
 } from '@automattic/calypso-products';
 import { Plans, type AddOnMeta } from '@automattic/data-stores';
+import { useSite } from '@automattic/data-stores/src/site';
 import { isSamePlan } from '../../lib/is-same-plan';
 import useHighlightLabels from './use-highlight-labels';
 import usePlansFromTypes from './use-plans-from-types';
@@ -54,7 +55,6 @@ interface Props {
 	term?: ( typeof TERMS_LIST )[ number ]; // defaults to monthly
 	intent?: PlansIntent;
 	selectedPlan?: PlanSlug;
-	sitePlanSlug?: PlanSlug | null;
 	hiddenPlans: HiddenPlans;
 	isInSignup?: boolean;
 	showLegacyStorageFeature?: boolean;
@@ -119,13 +119,16 @@ const isGridPlanVisible = ( {
 const usePlanTypesWithIntent = ( {
 	intent,
 	selectedPlan,
-	sitePlanSlug,
+	selectedSiteId,
 	hiddenPlans: { hideEnterprisePlan },
 	isSubdomainNotGenerated = false,
 }: Pick<
 	Props,
-	'intent' | 'selectedPlan' | 'sitePlanSlug' | 'hiddenPlans' | 'isSubdomainNotGenerated'
+	'intent' | 'selectedPlan' | 'selectedSiteId' | 'hiddenPlans' | 'isSubdomainNotGenerated'
 > ): string[] => {
+	const { data: { slug: sitePlanSlug } = {} } = useSite( {
+		siteIdOrSlug: selectedSiteId,
+	} );
 	const isEnterpriseAvailable = ! hideEnterprisePlan;
 	const isBloggerAvailable =
 		( selectedPlan && isBloggerPlan( selectedPlan ) ) ||
@@ -224,7 +227,6 @@ const useGridPlans = ( {
 	term = TERM_MONTHLY,
 	intent,
 	selectedPlan,
-	sitePlanSlug,
 	hiddenPlans,
 	isInSignup,
 	eligibleForFreeHostingTrial,
@@ -242,7 +244,7 @@ const useGridPlans = ( {
 		planTypes: usePlanTypesWithIntent( {
 			intent: 'default',
 			selectedPlan,
-			sitePlanSlug,
+			selectedSiteId,
 			hiddenPlans,
 			isSubdomainNotGenerated,
 		} ),
@@ -253,7 +255,7 @@ const useGridPlans = ( {
 		planTypes: usePlanTypesWithIntent( {
 			intent,
 			selectedPlan,
-			sitePlanSlug,
+			selectedSiteId,
 			hiddenPlans,
 			isSubdomainNotGenerated,
 		} ),
@@ -265,10 +267,13 @@ const useGridPlans = ( {
 	} );
 
 	// only fetch highlights for the plans that are available for the intent
+	const { data: { slug: sitePlanSlug } = {} } = useSite( {
+		siteIdOrSlug: selectedSiteId,
+	} );
 	const highlightLabels = useHighlightLabels( {
 		intent,
 		planSlugs: planSlugsForIntent,
-		currentSitePlanSlug: sitePlanSlug,
+		currentSitePlanSlug: sitePlanSlug as PlanSlug,
 		selectedPlan,
 		plansAvailabilityForPurchase,
 	} );

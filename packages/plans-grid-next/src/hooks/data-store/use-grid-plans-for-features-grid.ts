@@ -19,7 +19,6 @@ interface Params {
 	selectedPlan?: PlanSlug;
 	showLegacyStorageFeature?: boolean;
 	siteId?: number | null;
-	sitePlanSlug: PlanSlug | null;
 	storageAddOns: ( AddOnMeta | null )[];
 	term?: ( typeof TERMS_LIST )[ number ];
 	useCheckPlanAvailabilityForPurchase: UseCheckPlanAvailabilityForPurchase;
@@ -39,7 +38,6 @@ const useGridPlansForFeaturesGrid = ( {
 	selectedPlan,
 	showLegacyStorageFeature,
 	siteId,
-	sitePlanSlug,
 	storageAddOns,
 	term,
 	useCheckPlanAvailabilityForPurchase,
@@ -57,7 +55,6 @@ const useGridPlansForFeaturesGrid = ( {
 		selectedPlan,
 		selectedSiteId: siteId,
 		showLegacyStorageFeature,
-		sitePlanSlug,
 		storageAddOns,
 		term,
 		useCheckPlanAvailabilityForPurchase,
