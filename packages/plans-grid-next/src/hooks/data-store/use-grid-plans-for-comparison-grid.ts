@@ -20,7 +20,7 @@ interface Params {
 	eligibleForFreeHostingTrial: boolean;
 	hiddenPlans?: HiddenPlans;
 	intent?: PlansIntent;
-	isDisplayingPlansNeededForFeature: boolean;
+	isDisplayingPlansNeededForFeature?: boolean;
 	isSubdomainNotGenerated: boolean;
 	selectedFeature?: string | null;
 	selectedPlan?: PlanSlug;

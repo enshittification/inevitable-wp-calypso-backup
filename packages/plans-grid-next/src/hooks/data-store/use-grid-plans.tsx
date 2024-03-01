@@ -58,7 +58,7 @@ interface Props {
 	hiddenPlans?: HiddenPlans;
 	isInSignup?: boolean;
 	showLegacyStorageFeature?: boolean;
-	isDisplayingPlansNeededForFeature: boolean;
+	isDisplayingPlansNeededForFeature?: boolean;
 	/**
 	 * If the subdomain generation is unsuccessful we do not show the free plan
 	 */
@@ -81,7 +81,7 @@ const isGridPlanVisible = ( {
 	selectedPlan,
 }: {
 	hiddenPlans?: HiddenPlans;
-	isDisplayingPlansNeededForFeature: boolean;
+	isDisplayingPlansNeededForFeature?: boolean;
 	planSlug: PlanSlug;
 	planSlugsForIntent: PlanSlug[];
 	selectedPlan?: PlanSlug;
