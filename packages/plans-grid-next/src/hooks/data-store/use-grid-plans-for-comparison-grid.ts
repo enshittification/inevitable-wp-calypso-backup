@@ -18,7 +18,7 @@ interface Params {
 	allFeaturesList: FeatureList;
 	coupon?: string;
 	eligibleForFreeHostingTrial: boolean;
-	hiddenPlans: HiddenPlans;
+	hiddenPlans?: HiddenPlans;
 	intent?: PlansIntent;
 	isDisplayingPlansNeededForFeature: boolean;
 	isSubdomainNotGenerated: boolean;

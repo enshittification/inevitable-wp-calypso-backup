@@ -55,7 +55,7 @@ interface Props {
 	term?: ( typeof TERMS_LIST )[ number ]; // defaults to monthly
 	intent?: PlansIntent;
 	selectedPlan?: PlanSlug;
-	hiddenPlans: HiddenPlans;
+	hiddenPlans?: HiddenPlans;
 	isInSignup?: boolean;
 	showLegacyStorageFeature?: boolean;
 	isDisplayingPlansNeededForFeature: boolean;
@@ -74,13 +74,13 @@ const isGridPlanVisible = ( {
 		hidePremiumPlan,
 		hideBusinessPlan,
 		hideEcommercePlan,
-	},
+	} = {},
 	isDisplayingPlansNeededForFeature,
 	planSlug,
 	planSlugsForIntent,
 	selectedPlan,
 }: {
-	hiddenPlans: HiddenPlans;
+	hiddenPlans?: HiddenPlans;
 	isDisplayingPlansNeededForFeature: boolean;
 	planSlug: PlanSlug;
 	planSlugsForIntent: PlanSlug[];
@@ -120,7 +120,7 @@ const usePlanTypesWithIntent = ( {
 	intent,
 	selectedPlan,
 	selectedSiteId,
-	hiddenPlans: { hideEnterprisePlan },
+	hiddenPlans: { hideEnterprisePlan } = {},
 	isSubdomainNotGenerated = false,
 }: Pick<
 	Props,
