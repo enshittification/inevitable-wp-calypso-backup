@@ -39,7 +39,7 @@ export type UseFreeTrialPlanSlugs = ( {
 	eligibleForFreeHostingTrial,
 }: {
 	intent: PlansIntent;
-	eligibleForFreeHostingTrial: boolean;
+	eligibleForFreeHostingTrial?: boolean;
 } ) => {
 	[ Type in PlanType ]?: PlanSlug;
 };
@@ -49,7 +49,7 @@ interface Props {
 	allFeaturesList: FeatureList;
 	useCheckPlanAvailabilityForPurchase: Plans.UseCheckPlanAvailabilityForPurchase;
 	useFreeTrialPlanSlugs?: UseFreeTrialPlanSlugs;
-	eligibleForFreeHostingTrial: boolean;
+	eligibleForFreeHostingTrial?: boolean;
 	storageAddOns: ( AddOnMeta | null )[] | null;
 	selectedFeature?: string | null;
 	term?: ( typeof TERMS_LIST )[ number ]; // defaults to monthly

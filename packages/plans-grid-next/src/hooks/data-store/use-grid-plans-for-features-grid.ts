@@ -9,7 +9,7 @@ import usePlanFeaturesForGridPlans from './use-plan-features-for-grid-plans';
 interface Params {
 	allFeaturesList: FeatureList;
 	coupon?: string;
-	eligibleForFreeHostingTrial: boolean;
+	eligibleForFreeHostingTrial?: boolean;
 	hiddenPlans?: HiddenPlans;
 	intent?: PlansIntent;
 	isDisplayingPlansNeededForFeature: boolean;

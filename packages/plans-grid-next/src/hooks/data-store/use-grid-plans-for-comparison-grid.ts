@@ -17,7 +17,7 @@ const HIDDEN_PLANS = [ PLAN_HOSTING_TRIAL_MONTHLY, PLAN_ENTERPRISE_GRID_WPCOM ];
 interface Params {
 	allFeaturesList: FeatureList;
 	coupon?: string;
-	eligibleForFreeHostingTrial: boolean;
+	eligibleForFreeHostingTrial?: boolean;
 	hiddenPlans?: HiddenPlans;
 	intent?: PlansIntent;
 	isDisplayingPlansNeededForFeature?: boolean;
