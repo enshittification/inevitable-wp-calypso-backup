@@ -14,7 +14,7 @@ interface Params {
 	intent?: PlansIntent;
 	isDisplayingPlansNeededForFeature: boolean;
 	isInSignup: boolean;
-	isSubdomainNotGenerated: boolean;
+	isSubdomainNotGenerated?: boolean;
 	selectedFeature?: string | null;
 	selectedPlan?: PlanSlug;
 	showLegacyStorageFeature?: boolean;

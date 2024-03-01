@@ -21,7 +21,7 @@ interface Params {
 	hiddenPlans?: HiddenPlans;
 	intent?: PlansIntent;
 	isDisplayingPlansNeededForFeature?: boolean;
-	isSubdomainNotGenerated: boolean;
+	isSubdomainNotGenerated?: boolean;
 	selectedFeature?: string | null;
 	selectedPlan?: PlanSlug;
 	showLegacyStorageFeature?: boolean;
