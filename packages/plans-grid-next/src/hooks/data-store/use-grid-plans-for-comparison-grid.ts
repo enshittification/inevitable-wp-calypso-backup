@@ -29,7 +29,7 @@ interface Params {
 	storageAddOns: ( AddOnMeta | null )[];
 	term?: ( typeof TERMS_LIST )[ number ];
 	useCheckPlanAvailabilityForPurchase: UseCheckPlanAvailabilityForPurchase;
-	useFreeTrialPlanSlugs: UseFreeTrialPlanSlugs;
+	useFreeTrialPlanSlugs?: UseFreeTrialPlanSlugs;
 }
 
 const useGridPlansForComparisonGrid = ( {

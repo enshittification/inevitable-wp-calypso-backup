@@ -48,7 +48,7 @@ interface Props {
 	// allFeaturesList temporary until feature definitions are ported to calypso-products package
 	allFeaturesList: FeatureList;
 	useCheckPlanAvailabilityForPurchase: Plans.UseCheckPlanAvailabilityForPurchase;
-	useFreeTrialPlanSlugs: UseFreeTrialPlanSlugs;
+	useFreeTrialPlanSlugs?: UseFreeTrialPlanSlugs;
 	eligibleForFreeHostingTrial: boolean;
 	storageAddOns: ( AddOnMeta | null )[] | null;
 	selectedFeature?: string | null;
@@ -236,7 +236,7 @@ const useGridPlans = ( {
 	selectedSiteId,
 	isDisplayingPlansNeededForFeature,
 }: Props ): Omit< GridPlan, 'features' >[] | null => {
-	const freeTrialPlanSlugs = useFreeTrialPlanSlugs( {
+	const freeTrialPlanSlugs = useFreeTrialPlanSlugs?.( {
 		intent: intent ?? 'default',
 		eligibleForFreeHostingTrial,
 	} );
