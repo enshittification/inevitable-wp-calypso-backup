@@ -14,6 +14,7 @@ import getSiteScanState from 'calypso/state/selectors/get-site-scan-state';
 import isAtomicSite from 'calypso/state/selectors/is-site-automated-transfer';
 import isJetpackSiteMultiSite from 'calypso/state/sites/selectors/is-jetpack-site-multi-site';
 import getSelectedSiteId from 'calypso/state/ui/selectors/get-selected-site-id';
+import FirewallPage from './firewall';
 import ScanHistoryPage from './history';
 import ScanPage from './main';
 import ScanUpsellPage from './scan-upsell';
@@ -100,9 +101,14 @@ export function scan( context, next ) {
 export function scanHistory( context, next ) {
 	const state = context.store.getState();
 	const siteId = getSelectedSiteId( state );
-	const showScanNavigation = ! isAtomicSite( state, siteId ) && isJetpackCloud();
+	const showScanNavigation = ! isAtomicSite( state, siteId );
 	const { filter } = context.params;
 	context.primary = <ScanHistoryPage filter={ filter } showNavigation={ showScanNavigation } />;
+	next();
+}
+
+export function firewall( context, next ) {
+	context.primary = <FirewallPage />;
 	next();
 }
 
