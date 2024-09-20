@@ -63,7 +63,7 @@
 		"@wordpress/eslint-plugin": "^21.0.0",
 		"@wordpress/stylelint-config": "^22.7.0",
 		"node-fetch": "^2.6.6",
-		"typescript": "^5.3.3"
+		"typescript": "^5.6.2"
 	},
 	"peerDependencies": {
 		"@babel/core": "*",
